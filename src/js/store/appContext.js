@@ -9,6 +9,8 @@ export const Context = React.createContext(null);
 const injectContext = PassedComponent => {
 	const StoreWrapper = props => {
 		//this will be passed as the contenxt value
+		debugger;
+
 		const [state, setState] = useState(
 			getState({
 				getStore: () => state.store,
@@ -42,6 +44,7 @@ const injectContext = PassedComponent => {
 			</Context.Provider>
 		);
 	};
+
 	return StoreWrapper;
 };
 

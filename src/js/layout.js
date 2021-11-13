@@ -4,7 +4,7 @@ import ScrollToTop from "./component/scrollToTop";
 
 import { Home } from "./views/home";
 import { Demo } from "./views/demo";
-import { Single } from "./views/single";
+import TodoApp from "./views/TodoApplication";
 import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
@@ -22,14 +22,12 @@ const Layout = () => {
 				<ScrollToTop>
 					<Navbar />
 					<Switch>
-						<Route exact path="/">
-							<Home />
-						</Route>
+						<Route exact path="/" />
 						<Route exact path="/demo">
 							<Demo />
 						</Route>
-						<Route exact path="/single/:theid">
-							<Single />
+						<Route exact path="/todo">
+							<TodoApp />
 						</Route>
 						<Route>
 							<h1>Not found!</h1>
