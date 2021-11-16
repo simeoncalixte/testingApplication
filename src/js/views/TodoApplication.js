@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { Link, useParams, Switch, Route, useRouteMatch } from "react-router-dom";
-import { Context } from "../store/appContext";
+import { Context, withGlobalState } from "../store/appContext";
 import TodoList from "../component/TodoList.js";
 import Todo from "../component/Todo.js";
 import Nick from "../component/Nick.js";
+import todoApi from "../apiEndPoints/todoApi";
 // interface Todo {
 // 	label: string;
 // 	description: string;
@@ -28,21 +29,28 @@ const defaultList = [
 
 export const TodoApplication = props => {
 	const { store, actions } = useContext(Context);
+	const userReference = React.useRef();
 	let { path, url } = useRouteMatch();
 	const [todoItems, setTodoItems] = React.useState(defaultList);
 	const [userName, setUser] = React.useState([]);
 
 	const params = useParams();
-
+	const formSubmit = event => {
+		event.preventDefault();
+		todoApi.post(userReference.current.value);
+	};
 	return (
 		<>
 			<h1>Todo</h1>
-			<Nick />
+			<form onSubmit={formSubmit}>
+				<label>User Name:</label>
+				<input ref={userReference} name="userName" type="text" placeholder="Enter User" />
+				<button type="submit">Add User To Context</button>
+			</form>
 			<Switch>
 				<Route exact path={path}>
-					<TodoList list={todoItems} updateList={setTodoItems} />
+					<TodoList updateList={setTodoItems} />
 				</Route>
-				<Route path={`/todo/nick`} />
 				<Route path={`/todo/:topicId`}>
 					<Todo />
 				</Route>
@@ -54,4 +62,4 @@ export const TodoApplication = props => {
 TodoApplication.propTypes = {
 	match: PropTypes.object
 };
-export default TodoApplication;
+export default withGlobalState(TodoApplication);

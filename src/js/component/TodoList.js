@@ -1,29 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { Context } from "../store/appContext";
 
 export const TodoList = props => {
 	const inputReference = React.useRef();
-
-	const deleteItem = (event, i) => {
-		const newList = props.list.filter((todo, itemIndex) => {
-			return itemIndex !== i;
-		});
-
-		props.updateList(newList);
-	};
-
-	const addInputValueToList = e => {
-		const value = inputReference.current.value;
-		const itemToAdd = {
-			label: value,
-			description: "",
-			isCompleted: false,
-			dueDate: Date()
-		};
-
-		props.updateList([...props.list, itemToAdd]);
-		inputReference.current.value = "";
-	};
+	const [inputValue, updateInputValue] = React.useState();
+	const { globalState, addInputValueToList, deleteItem } = React.useContext(Context);
+	const { listItems } = globalState;
 
 	const mapList = (listItem, i) => {
 		return (
@@ -40,20 +23,20 @@ export const TodoList = props => {
 
 	return (
 		<div>
-			<input ref={inputReference} name="newTodoItemInsert" />
-			<button name="add" onClick={addInputValueToList}>
+			<input
+				ref={inputReference}
+				value={inputValue}
+				onChange={e => updateInputValue(e.target.value)}
+				name="newTodoItemInsert"
+			/>
+			<button name="add" onClick={e => addInputValueToList(e, inputReference.current.value)}>
 				Add
 			</button>
 			<section>
-				<ul>{props.list.map(mapList)}</ul>
+				<ul>{listItems.map(mapList)}</ul>
 			</section>
 		</div>
 	);
 };
 
 export default TodoList;
-
-TodoList.propTypes = {
-	list: PropTypes.array,
-	updateList: PropTypes.func
-};
