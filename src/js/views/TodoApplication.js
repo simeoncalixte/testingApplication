@@ -28,17 +28,35 @@ const defaultList = [
 ];
 
 export const TodoApplication = props => {
-	const { store, actions } = useContext(Context);
+	const { globalState, updateState } = useContext(Context);
 	const userReference = React.useRef();
 	let { path, url } = useRouteMatch();
 	const [todoItems, setTodoItems] = React.useState(defaultList);
 	const [userName, setUser] = React.useState([]);
 
 	const params = useParams();
+
+	const userSubmitted = response => {
+		if (response.result && response.result === "ok") {
+			if (userReference.current.value) {
+				updateState({
+					...globalState,
+					authentication: {
+						...globalState.authentication,
+						userName: userReference.current.value
+					}
+				});
+			}
+		}
+	};
+
+	////submit user to the backend
 	const formSubmit = event => {
 		event.preventDefault();
-		todoApi.post(userReference.current.value);
+		todoApi.post(userReference.current.value).then(userSubmitted); //.catch();
+		////other logic
 	};
+
 	return (
 		<>
 			<h1>Todo</h1>

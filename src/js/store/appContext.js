@@ -6,9 +6,7 @@ import todoApi from "../apiEndPoints/todoApi.js";
 const defaultList = [
 	{
 		label: "Test Label",
-		description: "Test Description",
-		dueDate: Date(),
-		isCompleted: false
+		done: false
 	}
 ];
 
@@ -17,7 +15,7 @@ export const Context = React.createContext(null);
 export const withGlobalState = ComponentToBeWrapperd => {
 	const ComponentToBeReturned = () => {
 		const [globalState, updateState] = React.useState({
-			authetnication: {
+			authentication: {
 				userName: "",
 				token: "",
 				emailAddress: "",
@@ -29,9 +27,7 @@ export const withGlobalState = ComponentToBeWrapperd => {
 		const addInputValueToList = (event, value) => {
 			const itemToAdd = {
 				label: value,
-				description: "",
-				isCompleted: false,
-				dueDate: Date()
+				done: false
 			};
 
 			updateState({ ...globalState, listItems: [...globalState.listItems, itemToAdd] });
@@ -45,7 +41,7 @@ export const withGlobalState = ComponentToBeWrapperd => {
 		};
 
 		return (
-			<Context.Provider value={{ globalState, addInputValueToList, deleteItem, todoApi }}>
+			<Context.Provider value={{ globalState, updateState, addInputValueToList, deleteItem, todoApi }}>
 				<ComponentToBeWrapperd />
 			</Context.Provider>
 		);

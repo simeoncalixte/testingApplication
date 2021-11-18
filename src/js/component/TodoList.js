@@ -12,8 +12,6 @@ export const TodoList = props => {
 		return (
 			<li key={i}>
 				<h2>{listItem.label}</h2>
-				<p>{listItem.description}</p>
-				<data>{listItem.dueDate}</data>
 				<button name="delete" onClick={event => deleteItem(event, i)}>
 					<div>x</div>
 				</button>
