@@ -3,12 +3,6 @@ import getState from "./flux.js";
 import todoApi from "../apiEndPoints/todoApi.js";
 
 // Don't change, here is where we initialize our context, by default it's just going to be null.
-const defaultList = [
-	{
-		label: "Test Label",
-		done: false
-	}
-];
 
 export const Context = React.createContext(null);
 
@@ -16,32 +10,71 @@ export const withGlobalState = ComponentToBeWrapperd => {
 	const ComponentToBeReturned = () => {
 		const [globalState, updateState] = React.useState({
 			authentication: {
-				userName: "",
+				userName: "simeoncalixte",
 				token: "",
 				emailAddress: "",
 				userId: ""
 			},
-			listItems: defaultList
+			listItems: []
 		});
+		const [isInitialLoad, setInitialLoadState] = React.useState(true);
+
+		React.useEffect(() => {
+			if (isInitialLoad) {
+				setInitialLoadState(false);
+				todoApi.get(globalState.authentication.userName).then(results => {
+					if (results.msg) return;
+					const listItems = results;
+					// update state with new list
+					updateState({ ...globalState, listItems });
+				});
+			}
+		}, []);
 
 		const addInputValueToList = (event, value) => {
 			const itemToAdd = {
 				label: value,
 				done: false
 			};
-
-			updateState({ ...globalState, listItems: [...globalState.listItems, itemToAdd] });
+			//create new List
+			const listItems = [...globalState.listItems, itemToAdd];
+			///send list to api
+			todoApi.put(listItems, globalState.authentication.userName);
+			// update state with new list
+			updateState({ ...globalState, listItems });
 		};
 
 		const deleteItem = (event, i) => {
-			const newList = globalState.listItems.filter((todo, itemIndex) => {
+			debugger;
+			const listItems = globalState.listItems.filter((todo, itemIndex) => {
 				return itemIndex !== i;
 			});
-			updateState({ ...globalState, listItems: newList });
+			///send list to api
+			todoApi.put(listItems, globalState.authentication.userName);
+			// update state with new list
+			updateState({ ...globalState, listItems });
 		};
 
+		const markAsCompleted = (event, i) => {
+			///edit item of index
+			const listItems = globalState.listItems.map((todoItem, itemIndex, array) => {
+				if (i === itemIndex) {
+					todoItem.done = !todoItem.done;
+					return todoItem;
+				} else {
+					return todoItem;
+				}
+			});
+			//send edited list to api
+			todoApi.put(listItems, globalState.authentication.userName);
+			// update state with new list
+			updateState({ ...globalState, listItems });
+		};
+
+		const contextValues = { globalState, updateState, addInputValueToList, deleteItem, todoApi, markAsCompleted };
+
 		return (
-			<Context.Provider value={{ globalState, updateState, addInputValueToList, deleteItem, todoApi }}>
+			<Context.Provider value={contextValues}>
 				<ComponentToBeWrapperd />
 			</Context.Provider>
 		);
@@ -55,7 +88,6 @@ export const withGlobalState = ComponentToBeWrapperd => {
 const injectContext = PassedComponent => {
 	const StoreWrapper = props => {
 		//this will be passed as the contenxt value
-		debugger;
 
 		const [state, setState] = useState(
 			getState({

@@ -7,7 +7,6 @@ const Form = props => {
 	const [count, setCount] = useState(0);
 
 	function deleteButton(index) {
-		debugger;
 		const deleted = listItem.filter((element, id) => id !== index);
 		setListItem(deleted);
 		setCount(prevCount => prevCount - 1);

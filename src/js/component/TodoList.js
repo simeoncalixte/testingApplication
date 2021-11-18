@@ -1,11 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Context } from "../store/appContext";
+import { useParams } from "react-router-dom";
 
 export const TodoList = props => {
 	const inputReference = React.useRef();
+	const { userName } = useParams();
 	const [inputValue, updateInputValue] = React.useState();
-	const { globalState, addInputValueToList, deleteItem } = React.useContext(Context);
+	const { globalState, addInputValueToList, deleteItem, markAsCompleted } = React.useContext(Context);
 	const { listItems } = globalState;
 
 	const mapList = (listItem, i) => {
@@ -15,6 +17,12 @@ export const TodoList = props => {
 				<button name="delete" onClick={event => deleteItem(event, i)}>
 					<div>x</div>
 				</button>
+				<input
+					type={"checkbox"}
+					name="markAsComplete"
+					onChange={event => markAsCompleted(event, i)}
+					defaultChecked={listItem.done}
+				/>
 			</li>
 		);
 	};

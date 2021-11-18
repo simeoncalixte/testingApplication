@@ -21,18 +21,14 @@ import todoApi from "../apiEndPoints/todoApi";
 const defaultList = [
 	{
 		label: "Test Label",
-		description: "Test Description",
-		dueDate: Date(),
-		isCompleted: false
+		done: false
 	}
 ];
 
 export const TodoApplication = props => {
-	const { globalState, updateState } = useContext(Context);
+	const { globalState, updateState } = React.useContext(Context);
 	const userReference = React.useRef();
 	let { path, url } = useRouteMatch();
-	const [todoItems, setTodoItems] = React.useState(defaultList);
-	const [userName, setUser] = React.useState([]);
 
 	const params = useParams();
 
@@ -67,12 +63,10 @@ export const TodoApplication = props => {
 			</form>
 			<Switch>
 				<Route exact path={path}>
-					<TodoList updateList={setTodoItems} />
-				</Route>
-				<Route path={`/todo/:topicId`}>
-					<Todo />
+					<TodoList />
 				</Route>
 			</Switch>
+			<button onClick={e => todoApi.deleteUser(globalState.authentication.userName)}>Delete User</button>
 		</>
 	);
 };
