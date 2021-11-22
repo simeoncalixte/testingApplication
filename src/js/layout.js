@@ -11,13 +11,49 @@ import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 
 //create your first component
+
+const colors = ["white", "black", "yellow", "green", "purple"];
 const Layout = () => {
+	const [currentColor, setColor] = React.useState(colors[2]);
+	const [counter, setCounter] = React.useState(0);
 	//the basename is used when your project is published in a subdirectory and not in the root of the domain
 	// you can set the basename on the .env file located at the root of this project, E.g: BASENAME=/react-hello-webapp/
 	const basename = process.env.BASENAME || "";
 
+	// React.useEffect(/**Effectfunction */, /**deps Optional*/);
+
+	const incrementColor = e => {
+		setColor(prevColor => {
+			const currentIndex = colors.indexOf(prevColor);
+			if (currentIndex === colors.length - 1) {
+				return colors[0];
+			} else {
+				return colors[currentIndex + 1];
+			}
+		});
+	};
+
+	const updateCount = () => {
+		/// any logic we want to run
+		setCounter(prevTime => {
+			return prevTime + 1;
+		});
+	};
+
+	//// set a interval  to change the color
+	const setIntervals = () => {
+		setInterval(updateCount, 1000);
+	};
+
+	/// whenever the colorChange use my effectCallback
+
+	/// on Page load/ on Mount/ on first render,   run this Effect Callback///
+	React.useEffect(setIntervals, []);
+
 	return (
-		<div>
+		<div style={{ backgroundColor: currentColor, height: "100vh" }}>
+			<button onClick={incrementColor}>Main Application</button>
+			<span>{counter}</span>
 			<BrowserRouter basename={basename}>
 				<ScrollToTop>
 					<Navbar />
