@@ -1,12 +1,38 @@
 import React from "react";
 import ColumnForm from "./ColumnFormContainer.js";
+import authenticationService from "../../../services/Firebase";
+import { Context } from "../../store/appContext.js";
 
 export const SignIn = props => {
+	const context = React.useContext(Context);
 	const emailReference = React.useRef();
 	const passwordReference = React.useRef();
+
+	const getEmailAndPassword = () => {
+		let email, password;
+		if (emailReference.current && emailReference.current.value) {
+			email = emailReference.current.value;
+		}
+		if (passwordReference.current && passwordReference.current.value) {
+			password = passwordReference.current.value;
+		}
+		return { email, password };
+	};
+
 	const signInHandler = event => {
+		event.preventDefault();
 		const { email, password } = getEmailAndPassword();
-		authenticationService.signInWithPassword(email, password);
+		const currentState = context.globalState;
+		context.updateState({
+			...currentState,
+			authentication: { ...currentState.authentication, isAuthLoading: true }
+		});
+		authenticationService.signInWithPassword(email, password).then(userCredentials => {
+			debugger;
+			userCredentials.isAuthLoading = false;
+			const newState = { ...currentState, authentication: userCredentials };
+			context.updateState(newState);
+		});
 	};
 
 	return (

@@ -13,7 +13,8 @@ export const withGlobalState = ComponentToBeWrapperd => {
 				userName: "simeoncalixte",
 				token: "",
 				emailAddress: "",
-				userId: ""
+				userId: "",
+				isAuthLoading: false
 			},
 			listItems: []
 		});
@@ -45,7 +46,6 @@ export const withGlobalState = ComponentToBeWrapperd => {
 		};
 
 		const deleteItem = (event, i) => {
-			debugger;
 			const listItems = globalState.listItems.filter((todo, itemIndex) => {
 				return itemIndex !== i;
 			});

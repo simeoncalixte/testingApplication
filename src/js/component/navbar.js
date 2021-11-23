@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 import SignUp from "../component/Forms/SignUp.js";
 import SignIn from "../component/Forms/SignIn.js";
 import styled from "styled-components";
+import { Context } from "../store/appContext.js";
+import { getIdTokenResult } from "@firebase/auth";
+import authenticationService from "../../services/Firebase.js";
+
 export const Navbar = () => {
 	return (
 		<nav className="navbar navbar-light bg-light mb-3">
@@ -43,24 +47,70 @@ const FormAlternative = styled.span``;
 
 const DropDown = () => {
 	const [isOpen, toggleOpen] = React.useState(false);
+	const [isAuthenitcated, setAuth] = React.useState(false);
 	const AuthenticationComponents = [SignIn, SignUp];
 	const shouldHide = isOpen ? true : false;
 	const [componentToDisplayIndex, toggleComponent] = React.useState(0);
 	const ComponentToDisplay = AuthenticationComponents[componentToDisplayIndex];
-	const buttonValue = componentToDisplayIndex ? "click here to register" : "click here to sign up";
+	const buttonValue = componentToDisplayIndex ? "click here to sign in" : "click here to sign up";
+	const { globalState, updateState } = React.useContext(Context);
+	const { authentication } = globalState;
+	const isAuthLoading = authentication && authentication.isAuthLoading ? authentication.isAuthLoading : false;
+	const authCheck = async () => {
+		if (authentication) {
+			if (authentication.hasOwnProperty("auth")) {
+				if (authentication.auth.hasOwnProperty("currentUser")) {
+					const userIsAuthenticated = await getIdTokenResult(authentication.auth.currentUser);
+					setAuth(true);
+				}
+			}
+		} else {
+			setAuth(false);
+		}
+	};
+
+	React.useEffect(() => {
+		authCheck();
+	});
+
+	const logOut = () => {
+		const newState = { ...globalState, authentication: null };
+		updateState(newState);
+		authenticationService.signOutApp();
+	};
 
 	return (
-		<section>
+		<>
 			<div onClick={() => toggleOpen(!isOpen)}>Login/Register</div>
-			<DropDownBody hidden={shouldHide}>
-				<ComponentToDisplay />
-				<FormAlternative
-					onClick={() => {
-						toggleComponent(Number(!!!componentToDisplayIndex));
-					}}>
-					{buttonValue}
-				</FormAlternative>
-			</DropDownBody>
-		</section>
+			{isAuthenitcated && (
+				<>
+					<div onClick={logOut}>Logout</div>
+				</>
+			)}
+			<section>
+				{isAuthLoading && <Loading />}
+				{!isAuthenitcated && (
+					<>
+						<DropDownBody hidden={shouldHide}>
+							<ComponentToDisplay />
+							<FormAlternative
+								onClick={() => {
+									toggleComponent(Number(!!!componentToDisplayIndex));
+								}}>
+								{buttonValue}
+							</FormAlternative>
+						</DropDownBody>
+					</>
+				)}
+			</section>
+		</>
+	);
+};
+
+const Loading = () => {
+	return (
+		<div className="spinner-border" role="status">
+			<span className="sr-only">Loading...</span>
+		</div>
 	);
 };

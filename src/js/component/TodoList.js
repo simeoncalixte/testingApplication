@@ -27,6 +27,10 @@ export const TodoList = props => {
 		);
 	};
 
+	const listenForClick = e => {
+		addInputValueToList(e, inputReference.current.value);
+	};
+
 	return (
 		<div>
 			<input
@@ -35,7 +39,7 @@ export const TodoList = props => {
 				onChange={e => updateInputValue(e.target.value)}
 				name="newTodoItemInsert"
 			/>
-			<button name="add" onClick={e => addInputValueToList(e, inputReference.current.value)}>
+			<button name="add" onClick={listenForClick}>
 				Add
 			</button>
 			<section>

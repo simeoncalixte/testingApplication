@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { Link, useParams, Switch, Route, useRouteMatch } from "react-router-dom";
-import { Context, withGlobalState } from "../store/appContext";
+import { Context } from "../store/appContext";
 import TodoList from "../component/TodoList.js";
 import Todo from "../component/Todo.js";
-import Nick from "../component/Nick.js";
 import todoApi from "../apiEndPoints/todoApi";
 // interface Todo {
 // 	label: string;
@@ -29,8 +28,6 @@ export const TodoApplication = props => {
 	const { globalState, updateState } = React.useContext(Context);
 	const userReference = React.useRef();
 	let { path, url } = useRouteMatch();
-
-	const params = useParams();
 
 	const userSubmitted = response => {
 		if (response.result && response.result === "ok") {
@@ -65,6 +62,9 @@ export const TodoApplication = props => {
 				<Route exact path={path}>
 					<TodoList />
 				</Route>
+				<Route path={`${path}/:todoId`}>
+					<Todo />
+				</Route>
 			</Switch>
 			<button onClick={e => todoApi.deleteUser(globalState.authentication.userName)}>Delete User</button>
 		</>
@@ -74,4 +74,4 @@ export const TodoApplication = props => {
 TodoApplication.propTypes = {
 	match: PropTypes.object
 };
-export default withGlobalState(TodoApplication);
+export default TodoApplication;

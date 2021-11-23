@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 // TODO: Add SDKs for Firebase products that you want to use
 
@@ -36,27 +36,33 @@ const authInstance = getAuth();
 const signUpWithPassword = (email, password) =>
 	createUserWithEmailAndPassword(authInstance, email, password)
 		.then(userCredential => {
-			// Signed in
-			debugger;
+			// Signed in Success
 			const user = userCredential.user;
+			return user;
+		})
+		.catch(error => {
+			// Sign Failure
+			const errorCode = error.code;
+			const errorMessage = error.message;
+			return error;
+		});
 
+const signInWithPassword = (email, password) =>
+	signInWithEmailAndPassword(authInstance, email, password)
+		.then(userCredential => {
+			// Signed in
+			const user = userCredential.user;
+			return user;
 			// ...
 		})
 		.catch(error => {
 			const errorCode = error.code;
 			const errorMessage = error.message;
-			// ..
+			return error;
 		});
 
-const signInWithPassword = (email,password) => signInWithEmailAndPassword(auth, email, password)
-.then((userCredential) => {
-  // Signed in 
-  const user = userCredential.user;
-  // ...
-})
-.catch((error) => {
-  const errorCode = error.code;
-  const errorMessage = error.message;
-});
+const signOutApp = () => {
+	signOut(authInstance);
+};
 
-export default { app, signUpWithPassword,signInWithPassword, authInstance };
+export default { app, signUpWithPassword, signInWithPassword, signOutApp };
